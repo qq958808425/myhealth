@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.health.dao.CheckGroupDao">
+    <!--查询所有【检查组】-->
+    <select id="findAll" resultType="CheckGroup">
+        select * from t_checkgroup
+    </select>
+
+    <!--添加【检查组】-->
+    <!--keyProperty="id" 指定主键； useGeneratedKeys="true"使用自动生成的key-->
+    <insert id="add" parameterType="CheckGroup" keyProperty="id" useGeneratedKeys="true">
+        insert into t_checkgroup(code,name,helpCode,sex,remark,attention)
+        values (#{code},#{name},#{helpCode},#{sex},#{remark},#{attention})
+    </insert>
+
+    <!--添加检查组与检查项的关系-->
+    <insert id="addCheckGroupCheckItemById" parameterType="int">
+        insert into t_checkgroup_checkitem(checkgroup_id, checkitem_id)
+        values (#{checkGroupId},#{checkitemId})
+    </insert>
+
+    <!--分页查询【检查组】 判断搜索条件【String类型】-->
+    <select id="findPage" parameterType="string" resultType="CheckGroup">
+        select * from t_checkgroup
+        <where>
+            <if test="value != null and value.length > 0">
+                code like #{queryString} or name like #{queryString} or helpCode like #{queryString}
+            </if>
+        </where>
+    </select>
+
+    <!--根据ID查询【检查组】-->
+    <select id="findById" parameterType="int" resultType="CheckGroup">
+        select * from t_checkgroup where id=#{id}
+    </select>
+
+    <!--根据检查组ID查询【勾选检查项】-->
+    <select id="findCheckGroupCheckItemById" parameterType="int" resultType="Integer">
+        select checkitem_id from t_checkgroup_checkitem where checkgroup_id=#{id}
+    </select>
+
+    <!--更新【检查组】-->
+    <update id="updateCheckGroup" parameterType="CheckGroup">
+        update t_checkgroup
+        set
+        code=#{code},
+        name=#{name},
+        helpCode=#{helpCode},
+        sex=#{sex},
+        remark=#{remark},
+        attention=#{attention}
+        where id=#{id}
+    </update>
+
+    <!--删除【检查组与检查项】旧关系-->
+    <delete id="deleteCheckGroupCheckItemById" parameterType="int">
+        delete from t_checkgroup_checkitem where checkgroup_id=#{checkGroupId}
+    </delete>
+
+    <!--统计【检查组与套餐】关联总数-->
+    <select id="findSetmealCheckGroupById" parameterType="int" resultType="int">
+        select count(1) from t_setmeal_checkgroup where checkgroup_id=#{id}
+    </select>
+
+    <!--删除【检查组】-->
+    <delete id="deleteCheckGroup" parameterType="int">
+        delete from t_checkgroup where id=#{id}
+    </delete>
+</mapper>
